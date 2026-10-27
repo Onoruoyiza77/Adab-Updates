@@ -31,20 +31,17 @@ def gnews(q):
 FEEDS = [
     # JOBS
     ("JOB", "WeWorkRemotely", "https://weworkremotely.com/remote-jobs.rss"),
-    ("JOB", "RemoteOK", "https://remoteok.com/remote-jobs.rss"),
     ("JOB", "News: Nigeria jobs", gnews("jobs Nigeria hiring graduate trainee")),
     ("JOB", "News: Jobberman/MyJobMag",
      gnews("site:jobberman.com OR site:myjobmag.com")),
     ("JOB", "News: biochemist/lab jobs", gnews("biochemist OR laboratory jobs Nigeria")),
     # BONUSES / PROMOS
     ("BONUS", "Reddit beermoney", "https://www.reddit.com/r/beermoney/new/.rss"),
-    ("BONUS", "Reddit freebies", "https://www.reddit.com/r/freebies/new/.rss"),
-    ("BONUS", "Reddit signupsforpay", "https://www.reddit.com/r/signupsforpay/new/.rss"),
     ("BONUS", "News: signup bonus", gnews("signup bonus OR referral bonus OR cashback Nigeria")),
     ("BONUS", "News: grants", gnews("grant OR scholarship OR fellowship Nigeria apply")),
     # NEW SITE / PLATFORM LAUNCHES
     ("LAUNCH", "Product Hunt", "https://www.producthunt.com/feed"),
-    ("LAUNCH", "BetaList", "https://betalist.com/feed"),
+    ("LAUNCH", "News: beta/waitlist", gnews("beta OR waitlist OR \"early access\" launch platform")),
     ("LAUNCH", "News: new platform launch", gnews("launches OR launched app Nigeria earn rewards")),
 ]
 
