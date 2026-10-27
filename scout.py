@@ -112,6 +112,7 @@ def send(msg):
     )
     if not r.ok:
         print("Telegram error:", r.text)
+        raise SystemExit("Telegram send failed: " + r.text)
 
 
 def main():
@@ -119,6 +120,8 @@ def main():
     seen_set = set(seen)
     cutoff = datetime.now(timezone.utc) - timedelta(hours=MAX_AGE_HOURS)
     found = []
+    report = []
+    new_items = 0
 
     for cat, name, url in FEEDS:
         try:
@@ -127,8 +130,11 @@ def main():
             feed = feedparser.parse(resp.content)
         except Exception as ex:
             print(f"[skip] {name}: {ex}")
+            report.append(f"{name}: ERROR")
             continue
-        print(f"{name}: {len(feed.entries)} entries")
+        status = getattr(resp, "status_code", "?")
+        print(f"{name}: HTTP {status}, {len(feed.entries)} entries")
+        report.append(f"{name}: {len(feed.entries)} (HTTP {status})")
         for e in feed.entries:
             link = e.get("link")
             if not link:
@@ -138,6 +144,7 @@ def main():
                 continue
             seen_set.add(i)
             seen.append(i)
+            new_items += 1
             ts = entry_time(e)
             if ts and ts < cutoff:
                 continue
@@ -156,6 +163,10 @@ def main():
                 if flags else "")
         send(f"{icons[cat]} {cat} (score {score})\n{title}\nSource: {name}\n{link}{warn}")
         time.sleep(1)
+
+    if os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch" or not found:
+        send(f"🤖 Scout ran OK. New items: {new_items}, matches: {len(found)}.\n"
+             + "\n".join(report))
 
     save_seen(seen)
     print(f"Done. {len(found)} matches, sent {min(len(found), MAX_ALERTS_PER_RUN)}.")
